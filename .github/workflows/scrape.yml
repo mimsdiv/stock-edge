@@ -10,6 +10,15 @@ jobs:
   scrape:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        part:
+          - { start: 0, end: 799 }
+          - { start: 800, end: 1599 }
+          - { start: 1600, end: 2399 }
+          
+      fail-fast: false
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -46,6 +55,6 @@ jobs:
       
           
       - name: Run scraper
-        run: node regularfeed.js
+        run: node regularfeed.js ${{ matrix.part.start }} ${{ matrix.part.end }}
       
           
