@@ -33,7 +33,7 @@ const fetchandSaveData = async (page, stock) => {
             }
         }
 
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 3000));
 
         // navigate to feeds section
         // await page.waitForSelector('.tab-scroll-container', { timeout: 5000 }); // wait for the stock details to load
@@ -48,7 +48,7 @@ const fetchandSaveData = async (page, stock) => {
         await page.goto(newUrl, { waitUntil: 'networkidle2' });
 
         // load each feed item
-        await page.waitForSelector('ion-content ion-list ion-item', { timeout: 2000 });
+        await page.waitForSelector('ion-content ion-list ion-item', { timeout: 5000 });
         const feedItems = await page.$$('ion-content ion-list ion-item');
 
         for (const item of feedItems) {
