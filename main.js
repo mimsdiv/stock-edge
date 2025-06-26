@@ -14,7 +14,7 @@ const fetchandSaveData = async (page, stock) => {
         await page.type('input.searchbar-input', stock.symbol, { delay: 100 });
 
         // wait for the search results to load
-        await page.waitForSelector('.search-result-list-web ion-item[button]', { timeout: 3000 });
+        await page.waitForSelector('.search-result-list-web ion-item[button]', { timeout: 5000 });
 
         // click on the first stock result
         const items = await page.$$('.search-result-list-web ion-item[button]');
@@ -33,7 +33,7 @@ const fetchandSaveData = async (page, stock) => {
             }
         }
 
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
 
         // navigate to feeds section
         // await page.waitForSelector('.tab-scroll-container', { timeout: 5000 }); // wait for the stock details to load
