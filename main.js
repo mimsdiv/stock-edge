@@ -75,10 +75,12 @@ const fetchandSaveData = async (page, stock) => {
                 await saveDatatoWordPress(stockData);
             }
         }
-
     }
     catch (error) {
-        console.error(`Error fetching data for ${stock.symbol}:`, error.message);
+        const text = await page.$eval('input.searchbar-input', el => el.value);
+        console.error(`Error fetching data for ${text}:`, error.message);
+        await page.click('input.searchbar-input', { clickCount: 3 }); // Select all text
+        await page.keyboard.press('Backspace'); // Clear the input
     }
 }
 
