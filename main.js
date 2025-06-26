@@ -29,6 +29,8 @@ const fetchandSaveData = async (page, stock) => {
             }
             else {
                 console.log(`No matching stock found for ${stock.symbol}`);
+                await page.click('input.searchbar-input', { clickCount: 3 }); // Select all text
+                await page.keyboard.press('Backspace'); // Clear the input
                 return;
             }
         }
