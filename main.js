@@ -76,7 +76,7 @@ const fetchandSaveData = async (page, stock) => {
 
     }
     catch (error) {
-        console.error(`Error fetching data for ${stock}:`, error);
+        console.error(`Error fetching data for ${stock.symbol}:`, error.message);
     }
 }
 
