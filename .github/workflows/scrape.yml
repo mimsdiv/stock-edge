@@ -13,8 +13,9 @@ jobs:
     strategy:
       matrix:
         part:
-          - { start: 600, end: 900 }
-          - { start: 900, end: 1200 }
+          - { start: 0, end: 799 }
+          - { start: 800, end: 1599 }
+          - { start: 1600, end: 2399 }
           
       fail-fast: false
 
