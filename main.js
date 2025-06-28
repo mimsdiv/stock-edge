@@ -151,7 +151,7 @@ const main = async () => {
         }
         await fetchandSaveData(page, stocks[0]);
 
-        // await browser.close();
+        await browser.close();
     }
     catch (error) {
         console.error("An error occurred:", error);
