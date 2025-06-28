@@ -50,7 +50,7 @@ const fetchandSaveData = async (page, stock) => {
         await page.goto(newUrl, { waitUntil: 'networkidle2' });
 
         // load each feed item
-        await page.waitForSelector('ion-content ion-list ion-item', { timeout: 5000 });
+        await page.waitForSelector('ion-content ion-list ion-item', { timeout: 3000 });
         const feedItems = await page.$$('ion-content ion-list ion-item');
 
         for (const item of feedItems) {
@@ -73,6 +73,12 @@ const fetchandSaveData = async (page, stock) => {
                 // console.log(`Saving data for ${stock.symbol}:`, stockData);
 
                 await saveDatatoWordPress(stockData);
+            }
+
+            if (new Date() - new Date(date) > 24 * 60 * 60 * 1000) {
+                // If the date is more than 24 hours old, skip further processing
+                // console.log(`Skipping old feed item for ${stock.symbol} dated ${date}`);
+                break;
             }
         }
     }
@@ -113,6 +119,7 @@ const main = async () => {
             headless: true,
             args: [
                 '--no-sandbox',
+                '--disable-gpu',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
                 '--disable-popup-blocking',
