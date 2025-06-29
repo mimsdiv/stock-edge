@@ -49,17 +49,31 @@ const fetchandSaveData = async (page, stock) => {
         const newUrl = currentUrl.substring(0, currentUrl.indexOf('?')) + '?section=feeds';
         await page.goto(newUrl, { waitUntil: 'networkidle2' });
 
+        // filter the feeds by date
+        await page.waitForSelector('se-option-btns', { timeout: 5000 });
+        await page.click('se-option-btns'); // Click on the Filter button
+        await page.waitForSelector('app-feeds-filter ion-radio-group > div > ion-item:nth-child(2)', { timeout: 5000 });
+        await page.click('app-feeds-filter ion-radio-group > div > ion-item:nth-child(2)'); // Click on the Date filter option
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for the filter to apply
+
         // load each feed item
         await page.waitForSelector('ion-content ion-list ion-item', { timeout: 3000 });
         const feedItems = await page.$$('ion-content ion-list ion-item');
 
         for (const item of feedItems) {
-            const sourceElement = await item.$('ion-grid > ion-row:nth-child(1) > ion-col:nth-child(1)');
             const dateElement = await item.$('ion-grid > ion-row:nth-child(1) > ion-col:nth-child(2)');
+            const date = dateElement ? await page.evaluate(el => el.textContent.trim(), dateElement) : '';
+
+            if (!isNaN(new Date(date)) && (Date.now() - new Date(date) > 24 * 60 * 60 * 1000)) {
+                // If the date is valid (not Today, Just Now) or more than 24 hours old, skip further processing
+                // console.log(`Skipping old feed item for ${stock.symbol} dated ${date}`);
+                break;
+            }
+
+            const sourceElement = await item.$('ion-grid > ion-row:nth-child(1) > ion-col:nth-child(1)');
             const contentElement = await item.$('ion-grid > ion-row:nth-child(2) > ion-col > p');
 
             const source = sourceElement ? await page.evaluate(el => el.textContent.trim(), sourceElement) : '';
-            const date = dateElement ? await page.evaluate(el => el.textContent.trim(), dateElement) : '';
             const content = contentElement ? await page.evaluate(el => el.textContent.trim(), contentElement) : '';
 
             if (source && content) {
@@ -75,16 +89,11 @@ const fetchandSaveData = async (page, stock) => {
                 await saveDatatoWordPress(stockData);
             }
 
-            if (new Date() - new Date(date) > 24 * 60 * 60 * 1000) {
-                // If the date is more than 24 hours old, skip further processing
-                // console.log(`Skipping old feed item for ${stock.symbol} dated ${date}`);
-                break;
-            }
         }
     }
     catch (error) {
         const text = await page.$eval('input.searchbar-input', el => el.value);
-        console.error(`Error fetching data for ${text}:`, error.message);
+        console.error(`Error fetching data ${text}:`, error.message);
         await page.click('input.searchbar-input', { clickCount: 3 }); // Select all text
         await page.keyboard.press('Backspace'); // Clear the input
     }
@@ -149,7 +158,7 @@ const main = async () => {
             await new Promise(resolve => setTimeout(resolve, 2000));
             await fetchandSaveData(page, stock);
         }
-        await fetchandSaveData(page, stocks[0]);
+        // await fetchandSaveData(page, stocks[0]);
 
         await browser.close();
     }
