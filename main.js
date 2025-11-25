@@ -13,7 +13,6 @@ const delay = ms => new Promise(res => setTimeout(res, ms));
 
 const fetchandSaveData = async (page, stock) => {
     try {
-        // Clear and type symbol input
         await page.waitForSelector('input.searchbar-input', { timeout: 5000 });
         await page.click('input.searchbar-input', { clickCount: 3 });
         await page.keyboard.press('Backspace');
@@ -43,7 +42,6 @@ const fetchandSaveData = async (page, stock) => {
 
         await delay(3000);
 
-        // Navigate to feeds section by URL modification
         const currentUrl = page.url();
         const newUrl = currentUrl.split('?')[0] + '?section=feeds';
         await page.goto(newUrl, { waitUntil: 'networkidle2' });
@@ -51,7 +49,7 @@ const fetchandSaveData = async (page, stock) => {
         await page.waitForSelector('se-option-btns', { timeout: 5000 });
         await page.click('se-option-btns'); // Open filter
         await page.waitForSelector('app-feeds-filter ion-radio-group > div > ion-item:nth-child(2)', { timeout: 5000 });
-        await page.click('app-feeds-filter ion-radio-group > div > ion-item:nth-child(2)'); // Filter by date
+        await page.click('app-feeds-filter ion-radio-group > div > ion-item:nth-child(2)');
         await delay(2000);
 
         await page.waitForSelector('ion-content ion-list ion-item', { timeout: 5000 });
@@ -63,11 +61,9 @@ const fetchandSaveData = async (page, stock) => {
 
             const postDate = new Date(dateText);
             if (isNaN(postDate)) {
-                // Skip invalid dates (e.g., Today, Just Now)
                 continue;
             }
 
-            // Skip feed older than 24 hours
             if ((Date.now() - postDate.getTime()) > 24 * 60 * 60 * 1000) {
                 break;
             }
@@ -88,7 +84,7 @@ const fetchandSaveData = async (page, stock) => {
                 };
 
                 await saveDatatoWordPress(stockData);
-                await delay(500); // Delay between posts to reduce server load
+                await delay(500); // Delay between API posts
             }
         }
     } catch (error) {
@@ -109,9 +105,14 @@ const saveDatatoWordPress = async (data) => {
         if(CONFIG.wpApiToken){
             headers['Authorization'] = `Bearer ${CONFIG.wpApiToken}`;
         }
-        await axios.post(CONFIG.wpApiUrl, data, { headers });
+        const response = await axios.post(CONFIG.wpApiUrl, data, { headers });
+        console.log(`Data saved for ${data.stock}: Status ${response.status}`);
     } catch (error) {
-        console.error('WP API Error:', error.response?.data || error.message);
+        if (error.response) {
+            console.error('WP API Error:', error.response.status, error.response.data);
+        } else {
+            console.error('WP API Error:', error.message);
+        }
     }
 }
 
