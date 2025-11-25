@@ -1,0 +1,28 @@
+name: Run Stock News Scraper (600–1200)
+on:
+  schedule:
+    - cron: "30 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        part:
+          - { start: 600, end: 900 }
+          - { start: 900, end: 1200 }
+      fail-fast: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install Puppeteer dependencies
+        run: sudo apt-get update && sudo apt-get install -y libnss3 libxss1 libasound2t64
+      - name: Install project dependencies
+        run: npm install
+      - name: Run scraper
+        run: node main.js ${{ matrix.part.start }} ${{ matrix.part.end }}
