@@ -8,7 +8,7 @@ import dotenv from 'dotenv'
 import axios from 'axios'
 
 dotenv.config();
-const wpApiUrl = 'https://profitbooking.in/wp-json/scraper/v1/stockedge-feeddata';
+const wpApiUrl = 'https://rajakrishna.in/wp-json/scraper/v1/stockedge-feeddata';
 
 async function scrapeStockFeeds(start, end) {
   console.log('Starting browser...');
