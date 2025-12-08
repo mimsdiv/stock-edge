@@ -4,7 +4,7 @@ import axios from "axios";
 
 const CONFIG = {
     pageUrl: "https://web.stockedge.com/app/markets",
-    wpApiUrl: "https://profitbooking.in/wp-json/scraper/v1/stockedge-feeddata",
+    wpApiUrl: "https://rajakrishna.in/wp-json/scraper/v1/stockedge-feeddata",
     inputFile: "stocks.csv",
 }
 
